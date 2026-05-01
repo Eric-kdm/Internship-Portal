@@ -1,0 +1,25 @@
+import express from "express";
+import cors from "cors";
+
+import internshipRoutes from "./routes/internship.routes.js";
+import statsRoutes from "./routes/stats.routes.js";
+import testimonialRoutes from "./routes/testimonial.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use("/api/auth", authRoutes);
+
+app.use("/api/internships", internshipRoutes);
+app.use("/api/stats", statsRoutes);
+app.use("/api/testimonials", testimonialRoutes);
+
+// TEMP TEST ROUTE (important)
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
+
+
+export default app;
