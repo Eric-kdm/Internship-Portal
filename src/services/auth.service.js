@@ -1,29 +1,40 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import { validateRegister } from "../validations/auth.validation.js";
-import { validateLogin } from "../validations/auth.validation.js";
-
+import { validateRegister, validateLogin } from "../validations/auth.validation.js";
 import { generateToken } from "../utils/generateToken.js";
 
+// REGISTER
 export const registerService = async (data) => {
-  // ✅ Validate input
   validateRegister(data);
 
-  const { email, password } = data;
+  const {
+    role,
+    email,
+    password,
+    firstName,
+    lastName,
+    companyName,
+    website,
+  } = data;
 
-  // ✅ Check existing user
+  // Check existing user
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error("User already exists");
   }
 
-  //  Hash password
+  // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Create user
+  // Create user (controlled fields only)
   const user = await User.create({
-    ...data,
+    role,
+    email,
     password: hashedPassword,
+    firstName,
+    lastName,
+    companyName,
+    website,
   });
 
   // Generate token
@@ -39,6 +50,8 @@ export const registerService = async (data) => {
     },
   };
 };
+
+// LOGIN
 export const loginService = async (data) => {
   validateLogin(data);
 

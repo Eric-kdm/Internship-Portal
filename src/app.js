@@ -5,6 +5,8 @@ import internshipRoutes from "./routes/internship.routes.js";
 import statsRoutes from "./routes/stats.routes.js";
 import testimonialRoutes from "./routes/testimonial.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import testRoutes from "./routes/test.routes.js";
+
 
 const app = express();
 
@@ -15,6 +17,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/test", testRoutes);
 
 // TEMP TEST ROUTE (important)
 app.get("/", (req, res) => {
