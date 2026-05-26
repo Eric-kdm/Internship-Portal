@@ -41,6 +41,16 @@ const userSchema = new mongoose.Schema(
       },
     },
     website: String,
+
+    //profile completion tracking
+    profileCompleted: {
+      type: Boolean,
+      default: false,
+    },
+
+    //
+    avatar: String,
+    bio: String,
   },
   { timestamps: true }
 );

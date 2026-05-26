@@ -6,7 +6,7 @@ import statsRoutes from "./routes/stats.routes.js";
 import testimonialRoutes from "./routes/testimonial.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import testRoutes from "./routes/test.routes.js";
-
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.use("/api/internships", internshipRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/test", testRoutes);
-
+app.use("/api/dashboard", dashboardRoutes); 
 // TEMP TEST ROUTE (important)
 app.get("/", (req, res) => {
   res.send("API is running...");

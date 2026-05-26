@@ -1,47 +1,122 @@
 import Internship from "../models/internship.model.js";
+import { validateInternship } from "../validations/internship.validation.js";
 
-// CREATE
+
+// ================= CREATE =================
 export const createInternshipService = async (data, userId) => {
-  return await Internship.create({
+
+  // Validate input
+  validateInternship(data);
+
+  const internship = await Internship.create({
     ...data,
     createdBy: userId,
   });
+
+  return {
+    message: "Internship created successfully",
+    internship,
+  };
 };
 
-// READ ALL
+
+// ================= READ ALL =================
 export const getAllInternshipsService = async () => {
-  return await Internship.find().populate("createdBy", "email role");
+
+  const internships = await Internship.find()
+    .populate(
+      "createdBy",
+      "companyName email"
+    )
+    .sort({ createdAt: -1 });
+
+  return internships;
 };
 
-// READ ONE
+
+// ================= READ ONE =================
 export const getInternshipByIdService = async (id) => {
-  return await Internship.findById(id);
-};
 
-// UPDATE (only owner)
-export const updateInternshipService = async (id, data, userId) => {
-  const internship = await Internship.findById(id);
+  const internship = await Internship.findById(id).populate(
+    "createdBy",
+    "companyName email"
+  );
 
-  if (!internship) throw new Error("Internship not found");
-
-  if (internship.createdBy.toString() !== userId.toString()) {
-    throw new Error("Not authorized to update");
+  if (!internship) {
+    throw new Error("Internship not found");
   }
 
-  return await Internship.findByIdAndUpdate(id, data, { new: true });
+  return internship;
 };
 
-// DELETE (only owner)
-export const deleteInternshipService = async (id, userId) => {
+
+// ================= UPDATE =================
+export const updateInternshipService = async (
+  id,
+  data,
+  userId
+) => {
+
+  // Validate input
+  validateInternship(data);
+
   const internship = await Internship.findById(id);
 
-  if (!internship) throw new Error("Internship not found");
+  if (!internship) {
+    throw new Error("Internship not found");
+  }
 
-  if (internship.createdBy.toString() !== userId.toString()) {
-    throw new Error("Not authorized to delete");
+  // Ownership check
+  if (
+    internship.createdBy.toString() !==
+    userId.toString()
+  ) {
+    throw new Error(
+      "Not authorized to update this internship"
+    );
+  }
+
+  const updatedInternship =
+    await Internship.findByIdAndUpdate(
+      id,
+      data,
+      {
+        returnDocument: "after",
+      }
+    );
+
+  return {
+    message: "Internship updated successfully",
+    internship: updatedInternship,
+  };
+};
+
+
+// ================= DELETE =================
+export const deleteInternshipService = async (
+  id,
+  userId
+) => {
+
+  const internship = await Internship.findById(id);
+
+  if (!internship) {
+    throw new Error("Internship not found");
+  }
+
+  // Ownership check
+  if (
+    internship.createdBy.toString() !==
+    userId.toString()
+  ) {
+    throw new Error(
+      "Not authorized to delete this internship"
+    );
   }
 
   await internship.deleteOne();
 
-  return { message: "Internship deleted" };
+  return {
+    message: "Internship deleted successfully",
+  };
 };
