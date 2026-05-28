@@ -21,16 +21,55 @@ export const createInternshipService = async (data, userId) => {
 
 
 // ================= READ ALL =================
-export const getAllInternshipsService = async () => {
+export const getAllInternshipsService = async (query = {}) => {
 
-  const internships = await Internship.find()
-    .populate(
-      "createdBy",
-      "companyName email"
-    )
-    .sort({ createdAt: -1 });
+  const {
+    search,
+    location,
+    mode,
+    skills,
+    page = 1,
+    limit = 10
+  } = query;
 
-  return internships;
+  const filter = {};
+
+  if (search) {
+    filter.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { company: { $regex: search, $options: "i" } }
+    ];
+  }
+
+  if (location) {
+    filter.location = { $regex: location, $options: "i" };
+  }
+
+  if (mode) {
+    filter.mode = mode;
+  }
+
+  if (skills) {
+    filter.skills = { $in: skills.split(",") };
+  }
+
+  const skip = (page - 1) * limit;
+
+  const internships = await Internship.find(filter)
+    .populate("createdBy", "companyName email")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(Number(limit));
+
+  const total = await Internship.countDocuments(filter);
+
+  return {
+    success: true,
+    total,
+    page: Number(page),
+    limit: Number(limit),
+    data: internships
+  };
 };
 
 

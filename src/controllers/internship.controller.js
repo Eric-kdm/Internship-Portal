@@ -27,8 +27,15 @@ export const createInternship = async (req, res) => {
 
 // ================= GET ALL =================
 export const getInternships = async (req, res) => {
-  const data = await getAllInternshipsService();
-  res.json(data);
+  try {
+    const data = await getAllInternshipsService(req.query);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
 };
 
 
@@ -94,147 +101,3 @@ export const getMyInternships = async (req, res) => {
 };
 
 
-// ================= APPLY TO INTERNSHIP =================
-export const applyToInternship = async (req, res) => {
-  try {
-    const internship = await Internship.findById(req.params.id);
-
-    if (!internship) {
-      return res.status(404).json({
-        success: false,
-        message: "Internship not found"
-      });
-    }
-
-    // ensure array exists
-    if (!internship.applications) {
-      internship.applications = [];
-    }
-
-    // prevent duplicate applications
-    const alreadyApplied = internship.applications.find(
-      (a) => a?.student?.toString() === req.user._id.toString()
-    );
-
-    if (alreadyApplied) {
-      return res.status(400).json({
-        success: false,
-        message: "Already applied"
-      });
-    }
-
-    internship.applications.push({
-      student: req.user._id
-    });
-
-    await internship.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Application submitted"
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
-
-
-// ================= GET APPLICANTS (EMPLOYER ONLY) =================
-export const getApplicantsForInternship = async (req, res) => {
-  try {
-    const internship = await Internship.findById(req.params.id)
-      .populate({
-        path: "applications.student",
-        select: "firstName lastName email"
-      });
-
-    if (!internship) {
-      return res.status(404).json({
-        success: false,
-        message: "Internship not found"
-      });
-    }
-
-    // ownership check
-    if (internship.createdBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to view applicants"
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      count: internship.applications?.length || 0,
-      applicants: internship.applications || []
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
-
-//=========================Update Application Status (Accept/Reject)=========================
-export const updateApplicationStatus = async (req, res) => {
-  try {
-    const { internshipId, applicationId } = req.params;
-    const { status } = req.body;
-
-    // validate status
-    if (!["accepted", "rejected"].includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid status"
-      });
-    }
-
-    const internship = await Internship.findById(internshipId);
-
-    if (!internship) {
-      return res.status(404).json({
-        success: false,
-        message: "Internship not found"
-      });
-    }
-
-    // ownership check
-    if (internship.createdBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
-
-    // find application
-    const application = internship.applications.id(applicationId);
-
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application not found"
-      });
-    }
-
-    application.status = status;
-
-    await internship.save();
-
-    res.status(200).json({
-      success: true,
-      message: `Application ${status}`
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
