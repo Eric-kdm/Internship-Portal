@@ -1,6 +1,7 @@
 import Application from "../models/application.model.js";
 import Internship from "../models/internship.model.js";
 import { triggerNotification } from "../services/notification.service.js";
+import { getIO, getOnlineUsers } from "../socket/socket.js";
 
 
 // ================= APPLY TO INTERNSHIP =================
@@ -22,7 +23,7 @@ export const applyToInternship = async (req, res) => {
       internship: internshipId,
     });
 
-    // 🔔 notify employer
+    // 🔔 DB + EMAIL notification (employer)
     await triggerNotification({
       userId: internship.createdBy,
       message: "New application received",
@@ -30,6 +31,22 @@ export const applyToInternship = async (req, res) => {
       emailText: "A student applied to your internship",
       type: "application",
     });
+
+    // ⚡ SOCKET notification (employer)
+    const io = getIO();
+    const onlineUsers = getOnlineUsers();
+
+    const employerSocketId = onlineUsers.get(
+      internship.createdBy.toString()
+    );
+
+    if (employerSocketId) {
+      io.to(employerSocketId).emit("notification", {
+        type: "application",
+        message: "New application received",
+        internshipId,
+      });
+    }
 
     return res.status(201).json({
       success: true,
@@ -138,7 +155,7 @@ export const updateApplicationStatus = async (req, res) => {
     application.status = status;
     await application.save();
 
-    // 🔔 notify student
+    // 🔔 DB + EMAIL notification (student)
     await triggerNotification({
       userId: application.student,
       message: `Your application was ${status}`,
@@ -146,6 +163,22 @@ export const updateApplicationStatus = async (req, res) => {
       emailText: `You have been ${status} for internship`,
       type: "status",
     });
+
+    // ⚡ SOCKET notification (student)
+    const io = getIO();
+    const onlineUsers = getOnlineUsers();
+
+    const studentSocketId = onlineUsers.get(
+      application.student.toString()
+    );
+
+    if (studentSocketId) {
+      io.to(studentSocketId).emit("notification", {
+        type: "status",
+        message: `Your application was ${status}`,
+        internshipId: application.internship._id,
+      });
+    }
 
     return res.status(200).json({
       success: true,
