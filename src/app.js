@@ -10,12 +10,13 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import applicationRoutes from "./routes/application.routes.js";
-
+import notificationRoutes from "./routes/notification.routes.js";
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/analytics", analyticsRoutes);
@@ -30,6 +31,5 @@ app.use("/api/dashboard", dashboardRoutes);
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
-console.log("APPLICATION ROUTES LOADED");
 
 export default app;

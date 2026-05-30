@@ -1,47 +1,36 @@
+import Application from "../models/application.model.js";
 import Internship from "../models/internship.model.js";
 
 // GET MY APPLICATIONS
 export const getMyApplications = async (req, res) => {
   try {
+    // Get all applications of this student
+    const applications = await Application.find({
+      student: req.user._id,
+    }).populate("internship", "title company location stipend mode");
 
-    const internships = await Internship.find({
-      "applications.student": req.user._id
-    }).select(
-      "title company location stipend mode applications"
-    );
-
-    const appliedInternships = internships.map((internship) => {
-
-      const myApplication = internship.applications.find(
-        (app) =>
-          app.student.toString() === req.user._id.toString()
-      );
-
-      return {
-        internshipId: internship._id,
-        title: internship.title,
-        company: internship.company,
-        location: internship.location,
-        stipend: internship.stipend,
-        mode: internship.mode,
-        status: myApplication.status,
-        appliedAt: myApplication.appliedAt
-      };
-
-    });
+    const formattedApplications = applications.map((app) => ({
+      applicationId: app._id,
+      internshipId: app.internship?._id,
+      title: app.internship?.title,
+      company: app.internship?.company,
+      location: app.internship?.location,
+      stipend: app.internship?.stipend,
+      mode: app.internship?.mode,
+      status: app.status,
+      appliedAt: app.appliedAt,
+    }));
 
     res.status(200).json({
       success: true,
-      count: appliedInternships.length,
-      applications: appliedInternships
+      count: formattedApplications.length,
+      applications: formattedApplications,
     });
 
   } catch (error) {
-
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
-
   }
 };

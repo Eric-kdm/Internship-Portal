@@ -20,9 +20,6 @@ const router = express.Router();
 // Get all internships
 router.get("/", getInternships);
 
-// Get single internship
-router.get("/:id", getInternshipById);
-
 
 // ================= AUTHENTICATED ROUTES =================
 
@@ -33,6 +30,11 @@ router.get(
   authorizeRoles("employer"),
   getMyInternships
 );
+// Get single internship
+router.get("/:id", getInternshipById);
+
+
+
 
 
 // ================= EMPLOYER ROUTES =================
