@@ -11,6 +11,10 @@ import analyticsRoutes from "./routes/analytics.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import applicationRoutes from "./routes/application.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
+import userRoutes from "./routes/user.routes.js";
+
+
+
 const app = express();
 
 app.use(cors());
@@ -25,7 +29,7 @@ app.use("/api/stats", statsRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/dashboard", dashboardRoutes); 
-
+app.use("/api/users", userRoutes);
 
 // TEMP TEST ROUTE (important)
 app.get("/", (req, res) => {

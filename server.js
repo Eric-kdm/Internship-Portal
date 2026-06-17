@@ -1,16 +1,18 @@
 import dotenv from "dotenv";
+import path from "path";
+
+// FORCE absolute env load BEFORE anything else
+dotenv.config({ path: path.resolve("./.env") });
+
 import http from "http";
 import app from "./src/app.js";
 import connectDB from "./src/config/db.js";
 import { initSocket } from "./src/socket/socket.js";
 
-dotenv.config();
-
 connectDB();
 
 const server = http.createServer(app);
 
-// initialize socket
 initSocket(server);
 
 const PORT = process.env.PORT || 5000;

@@ -51,6 +51,12 @@ const userSchema = new mongoose.Schema(
     //
     avatar: String,
     bio: String,
+
+    // 📄 Resume (Cloudinary URL)
+    resumeUrl: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
