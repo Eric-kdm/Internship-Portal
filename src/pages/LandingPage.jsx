@@ -130,7 +130,7 @@ const [hoverCase, setHoverCase] = useState(false);
 
               {/* Start Exploring */}
 <button
-  onClick={() => navigate("/login")}
+  onClick={() => navigate("/register")}
   className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
     hoverRole
       ? "bg-white text-blue-600 border"

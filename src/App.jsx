@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage";
+import Register from "./pages/Register";
 import Login from "./pages/Login";
 import OrganizationProfileSetup from "./pages/OrganizationProfileSetup";
 import OrganizationDashboard from "./pages/OrganizationDashboard";
@@ -25,6 +26,12 @@ function App() {
           path="/"
           element={<LandingPage />}
         />
+
+        <Route 
+          path="/register" 
+          element={<Register />} 
+        />
+
         <Route
           path="/"
           element={<Login />}
