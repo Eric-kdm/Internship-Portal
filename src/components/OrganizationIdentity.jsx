@@ -1,4 +1,4 @@
-function OrganizationIdentity() {
+function OrganizationIdentity({ formData, setFormData }) {
   return (
     <section className="bg-white rounded-2xl p-8 shadow-sm">
       <h2 className="text-2xl font-bold mb-8">
@@ -47,10 +47,17 @@ function OrganizationIdentity() {
           </label>
 
           <input
-            type="text"
-            placeholder="The Editorial Architect"
-            className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+  type="text"
+  placeholder="The Editorial Architect"
+  value={formData.organizationName}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      organizationName: e.target.value,
+    })
+  }
+  className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
         </div>
 
         <div>
@@ -58,7 +65,16 @@ function OrganizationIdentity() {
             Organization Type
           </label>
 
-          <select className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select
+  value={formData.organizationType}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      organizationType: e.target.value,
+    })
+  }
+  className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
             <option>Agency</option>
             <option>Startup</option>
             <option>Corporate</option>

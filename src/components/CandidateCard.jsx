@@ -1,25 +1,65 @@
 function CandidateCard({
+  applicationId,
   name,
-  degree,
+  email,
   status,
-  skills,
 }) {
 
   const statusStyles = {
-    "Under Review":
-      "bg-blue-100 text-blue-700",
-    Shortlisted:
-      "bg-orange-100 text-orange-700",
-    Approved:
-      "bg-green-100 text-green-700",
-    Rejected:
-      "bg-red-100 text-red-700",
+    pending: "bg-yellow-100 text-yellow-700",
+    accepted: "bg-green-100 text-green-700",
+    rejected: "bg-red-100 text-red-700",
+  };
+
+  const updateStatus = async (newStatus) => {
+
+    try {
+
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `http://localhost:5000/api/applications/${applicationId}/status`,
+        {
+          method: "PATCH",
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+
+          body: JSON.stringify({
+            status: newStatus,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+
+        alert(data.message);
+
+        window.location.reload();
+
+      } else {
+
+        alert(data.message);
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("Server Error");
+
+    }
+
   };
 
   return (
-    <div className="group bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100 transition-all hover:-translate-y-2 hover:shadow-lg">
+    <div className="group bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
 
-      {/* Top */}
       <div className="flex justify-between items-start mb-6">
 
         <div className="w-20 h-20 rounded-2xl bg-blue-100 flex items-center justify-center text-3xl">
@@ -27,9 +67,8 @@ function CandidateCard({
         </div>
 
         <div
-          className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-            statusStyles[status] ||
-            "bg-gray-100 text-gray-700"
+          className={`px-3 py-1 rounded-full text-xs font-bold ${
+            statusStyles[status]
           }`}
         >
           {status}
@@ -37,39 +76,28 @@ function CandidateCard({
 
       </div>
 
-      {/* Name */}
-      <h3 className="text-2xl font-bold text-gray-900 mb-1">
+      <h3 className="text-2xl font-bold">
         {name}
       </h3>
 
-      {/* Degree */}
-      <p className="text-gray-500 text-sm font-medium mb-4">
-        {degree}
+      <p className="text-gray-500 mb-8">
+        {email}
       </p>
 
-      {/* Skills */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex gap-3">
 
-        {skills.map((skill, index) => (
-          <span
-            key={index}
-            className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
-          >
-            {skill}
-          </span>
-        ))}
-
-      </div>
-
-      {/* Actions */}
-      <div className="pt-6 border-t border-gray-100 flex gap-3">
-
-        <button className="flex-1 py-3 bg-gray-100 text-gray-800 font-bold rounded-xl text-sm hover:bg-gray-200 transition">
-          View Portfolio
+        <button
+          onClick={() => updateStatus("accepted")}
+          className="flex-1 bg-green-600 text-white py-3 rounded-xl"
+        >
+          Accept
         </button>
 
-        <button className="p-3 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition">
-          ✉️
+        <button
+          onClick={() => updateStatus("rejected")}
+          className="flex-1 bg-red-600 text-white py-3 rounded-xl"
+        >
+          Reject
         </button>
 
       </div>

@@ -1,10 +1,55 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function InternshipDetails() {
   const navigate = useNavigate();
 
-  const internship =
-    JSON.parse(localStorage.getItem("selectedInternship")) || {};
+  const [internship, setInternship] = useState(
+  JSON.parse(localStorage.getItem("selectedInternship")) || {}
+);
+
+useEffect(() => {
+
+  const fetchInternship = async () => {
+
+    try {
+
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `http://localhost:5000/api/internships/${internship._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+
+        setInternship(data);
+
+      } else {
+
+        alert(data.message);
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+
+  if (internship._id) {
+    fetchInternship();
+  }
+
+}, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -47,7 +92,7 @@ function InternshipDetails() {
           <div className="flex justify-between items-center mb-8">
 
             <h2 className="text-3xl font-bold">
-              {internship.roleTitle}
+              {internship.title}
             </h2>
 
             <span className="bg-green-100 text-green-700 px-4 py-2 rounded-full">
@@ -113,7 +158,7 @@ function InternshipDetails() {
               </h3>
 
               <p className="text-lg">
-                {internship.workMode}
+                {internship.mode}
               </p>
 
             </div>
@@ -153,7 +198,7 @@ function InternshipDetails() {
             </h3>
 
             <p className="text-gray-700">
-              {internship.skills}
+              {internship.skills?.join(", ")}
             </p>
 
           </div>
@@ -183,6 +228,32 @@ function InternshipDetails() {
             </p>
 
           </div>
+
+          {/* Tools */}
+<div className="mt-10">
+
+  <h3 className="text-xl font-bold mb-3">
+    Tools & Technologies
+  </h3>
+
+  <p className="text-gray-700">
+    {internship.tools}
+  </p>
+
+</div>
+
+{/* Qualification */}
+<div className="mt-10">
+
+  <h3 className="text-xl font-bold mb-3">
+    Preferred Qualification
+  </h3>
+
+  <p className="text-gray-700">
+    {internship.qualification}
+  </p>
+
+</div>
 
           {/* Dates */}
           <div className="grid md:grid-cols-2 gap-8 mt-10">

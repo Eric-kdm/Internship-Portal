@@ -30,7 +30,7 @@ function Login() {
     });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
   e.preventDefault();
 
   if (!loginData.email || !loginData.password) {
@@ -38,14 +38,60 @@ function Login() {
     return;
   }
 
-  alert(`${accountType} login successful`);
+  try {
+    const response = await fetch(
+      "http://localhost:5000/api/auth/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: loginData.email,
+          password: loginData.password,
+        }),
+      }
+    );
 
-  if (accountType === "student") {
-    navigate("/student-profile");
-  } else if (accountType === "organization") {
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Login Successful");
+
+      localStorage.setItem(
+        "token",
+        data.data.token
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.data.user)
+      );
+
+      if (data.data.user.role === "student") {
+
+  navigate("/student-profile");
+
+} else if (data.data.user.role === "employer") {
+
+  if (data.data.user.profileCompleted) {
+
+    navigate("/organization-dashboard");
+
+  } else {
+
     navigate("/organization-profile-setup");
-  } else if (accountType === "admin") {
-    navigate("/admin-dashboard");
+
+  }
+
+}
+    } else {
+      alert(data.message);
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("Server Error");
   }
 };
 

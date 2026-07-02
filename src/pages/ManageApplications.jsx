@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import DashboardSidebar from "../Components/DashboardSidebar";
 import ApplicationsHeader from "../Components/ApplicationsHeader";
@@ -13,60 +13,63 @@ function ManageApplications() {
   const [selectedRole, setSelectedRole] =
     useState("All Roles");
 
-  const candidates = [
-    {
-      name: "Elena Vance",
-      degree: "Master of Architecture, MIT",
-      status: "Under Review",
-      role: "Lead Architect",
-      skills: ["Revit", "Sustainable Design"],
-    },
-    {
-      name: "Marcus Thorne",
-      degree: "B.Arch, Cooper Union",
-      status: "Shortlisted",
-      role: "BIM Specialist",
-      skills: ["Rhino 3D", "Parametric Design"],
-    },
-    {
-      name: "Sarah Jenkins",
-      degree: "PhD Architecture, ETH Zurich",
-      status: "Approved",
-      role: "Lead Architect",
-      skills: ["Urban Planning", "ArcGIS"],
-    },
-    {
-      name: "Leo Zhang",
-      degree: "B.S Design, RISD",
-      status: "Rejected",
-      role: "Junior Designer",
-      skills: ["SketchUp", "Photoshop"],
-    },
-    {
-      name: "Maya Patel",
-      degree: "M.Arch, Bartlett School",
-      status: "Under Review",
-      role: "Junior Designer",
-      skills: ["Grasshopper", "V-Ray"],
-    },
-  ];
+  const [candidates, setCandidates] = useState([]);
+
+  useEffect(() => {
+
+  const fetchApplicants = async () => {
+
+    try {
+
+      const token = localStorage.getItem("token");
+
+      const internship =
+        JSON.parse(localStorage.getItem("selectedInternship"));
+
+      if (!internship?._id) return;
+
+      const response = await fetch(
+        `http://localhost:5000/api/applications/internship/${internship._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setCandidates(data.applicants);
+      } else {
+        alert(data.message);
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+
+  fetchApplicants();
+
+}, []);
 
   const filteredCandidates = candidates.filter(
     (candidate) => {
       const matchesTab =
-        activeTab === "All"
-          ? true
-          : candidate.status === activeTab;
-
+  activeTab === "All"
+    ? true
+    : candidate.status.toLowerCase() ===
+      activeTab.toLowerCase();
       const matchesSearch =
-        candidate.name
+        `${candidate.student.firstName} ${candidate.student.lastName}`
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
 
-      const matchesRole =
-        selectedRole === "All Roles"
-          ? true
-          : candidate.role === selectedRole;
+      const matchesRole = true;
 
       return (
         matchesTab &&
@@ -100,14 +103,14 @@ function ManageApplications() {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-8">
 
             {filteredCandidates.map(
-              (candidate, index) => (
+              (candidate) => (
                 <CandidateCard
-                  key={index}
-                  name={candidate.name}
-                  degree={candidate.degree}
-                  status={candidate.status}
-                  skills={candidate.skills}
-                />
+  key={candidate._id}
+  applicationId={candidate._id}
+  name={`${candidate.student.firstName} ${candidate.student.lastName}`}
+  email={candidate.student.email}
+  status={candidate.status}
+/>
               )
             )}
 

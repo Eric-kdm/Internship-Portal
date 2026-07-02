@@ -4,26 +4,23 @@ import { useNavigate } from "react-router-dom";
 function OrganizationSettings() {
   const navigate = useNavigate();
 
-  const [organizationName, setOrganizationName] =
-    useState("Tech Solutions Pvt Ltd");
-
-  const [industry, setIndustry] =
-    useState("Information Technology");
-
   const [website, setWebsite] =
     useState("https://www.techsolutions.com");
 
   const [email, setEmail] =
     useState("hr@techsolutions.com");
 
+  const [recoveryEmail, setRecoveryEmail] =
+    useState("");
+
+  const [accountType] =
+    useState("Employer");
+
+  const [organizationId] =
+    useState("ORG-2026-001");
+
   const [phone, setPhone] =
     useState("+91 9876543210");
-
-  const [description, setDescription] =
-    useState("");
-
-  const [logo, setLogo] =
-    useState("");
 
   const [password, setPassword] =
     useState("");
@@ -39,16 +36,13 @@ function OrganizationSettings() {
 
   const handleSave = () => {
     const settings = {
-      organizationName,
-      industry,
-      website,
-      email,
-      phone,
-      description,
-      logo,
-      emailNotifications,
-      applicationAlerts,
-    };
+  email,
+  phone,
+  recoveryEmail,
+  website,
+  emailNotifications,
+  applicationAlerts,
+};
 
     localStorage.setItem(
       "organizationSettings",
@@ -82,99 +76,110 @@ function OrganizationSettings() {
 
         <div className="bg-white rounded-2xl shadow-sm p-8 space-y-8">
 
-          {/* Organization Details */}
+          {/* Account Information */}
 
-          <div>
+<div>
 
-            <h2 className="text-2xl font-semibold mb-4">
-              Organization Details
-            </h2>
+  <h2 className="text-2xl font-semibold mb-6">
+    Account Information
+  </h2>
 
-            <div className="grid md:grid-cols-2 gap-4">
+  <div className="grid md:grid-cols-2 gap-5">
 
-              <input
-                type="text"
-                value={organizationName}
-                onChange={(e) =>
-                  setOrganizationName(e.target.value)
-                }
-                placeholder="Organization Name"
-                className="border p-3 rounded-lg"
-              />
+    {/* Contact Email */}
 
-              <input
-                type="text"
-                value={industry}
-                onChange={(e) =>
-                  setIndustry(e.target.value)
-                }
-                placeholder="Industry"
-                className="border p-3 rounded-lg"
-              />
+    <div>
+      <label className="block text-sm font-medium text-gray-600 mb-2">
+        Contact Email
+      </label>
 
-              <input
-                type="text"
-                value={website}
-                onChange={(e) =>
-                  setWebsite(e.target.value)
-                }
-                placeholder="Website"
-                className="border p-3 rounded-lg"
-              />
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="w-full border p-3 rounded-xl"
+      />
+    </div>
 
-              <input
-                type="email"
-                value={email}
-                onChange={(e) =>
-                  setEmail(e.target.value)
-                }
-                placeholder="Contact Email"
-                className="border p-3 rounded-lg"
-              />
+    {/* Phone */}
 
-              <input
-                type="text"
-                value={phone}
-                onChange={(e) =>
-                  setPhone(e.target.value)
-                }
-                placeholder="Phone Number"
-                className="border p-3 rounded-lg"
-              />
+    <div>
+      <label className="block text-sm font-medium text-gray-600 mb-2">
+        Phone Number
+      </label>
 
-              <input
-                type="text"
-                value={logo}
-                onChange={(e) =>
-                  setLogo(e.target.value)
-                }
-                placeholder="Logo URL"
-                className="border p-3 rounded-lg"
-              />
+      <input
+        type="text"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        className="w-full border p-3 rounded-xl"
+      />
+    </div>
 
-            </div>
+    {/* Recovery Email */}
 
-          </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-600 mb-2">
+        Recovery Email
+      </label>
 
-          {/* Description */}
+      <input
+        type="email"
+        value={recoveryEmail}
+        onChange={(e) => setRecoveryEmail(e.target.value)}
+        placeholder="recovery@example.com"
+        className="w-full border p-3 rounded-xl"
+      />
+    </div>
 
-          <div>
+    {/* Website */}
 
-            <h2 className="text-2xl font-semibold mb-4">
-              Company Description
-            </h2>
+    <div>
+      <label className="block text-sm font-medium text-gray-600 mb-2">
+        Website
+      </label>
 
-            <textarea
-              rows="5"
-              value={description}
-              onChange={(e) =>
-                setDescription(e.target.value)
-              }
-              className="w-full border p-3 rounded-lg"
-              placeholder="Describe your organization..."
-            />
+      <input
+        type="text"
+        value={website}
+        onChange={(e) => setWebsite(e.target.value)}
+        className="w-full border p-3 rounded-xl"
+      />
+    </div>
 
-          </div>
+    {/* Account Type */}
+
+    <div>
+      <label className="block text-sm font-medium text-gray-600 mb-2">
+        Account Type
+      </label>
+
+      <input
+        type="text"
+        value={accountType}
+        readOnly
+        className="w-full bg-gray-100 border p-3 rounded-xl cursor-not-allowed"
+      />
+    </div>
+
+    {/* Organization ID */}
+
+    <div>
+      <label className="block text-sm font-medium text-gray-600 mb-2">
+        Organization ID
+      </label>
+
+      <input
+        type="text"
+        value={organizationId}
+        readOnly
+        className="w-full bg-gray-100 border p-3 rounded-xl cursor-not-allowed"
+      />
+    </div>
+
+  </div>
+
+</div>
 
           {/* Security */}
 
@@ -215,7 +220,7 @@ function OrganizationSettings() {
           <div>
 
             <h2 className="text-2xl font-semibold mb-4">
-              Notifications
+              Notification Preferences
             </h2>
 
             <div className="space-y-3">

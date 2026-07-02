@@ -10,7 +10,7 @@ function EditInternship() {
     ) || {};
 
   const [roleTitle, setRoleTitle] =
-    useState(internship.roleTitle || "");
+  useState(internship.title || "");
 
   const [domain, setDomain] =
     useState(internship.domain || "");
@@ -24,30 +24,91 @@ function EditInternship() {
   const [duration, setDuration] =
     useState(internship.duration || "");
 
-  const handleUpdate = () => {
-    const internships =
-      JSON.parse(
-        localStorage.getItem("internships")
-      ) || [];
+  const [education, setEducation] =
+  useState(internship.education || "");
 
-    internships[internship.index] = {
-      ...internships[internship.index],
-      roleTitle,
-      domain,
-      location,
-      stipend,
-      duration,
-    };
+const [experience, setExperience] =
+  useState(internship.experience || "");
 
-    localStorage.setItem(
-      "internships",
-      JSON.stringify(internships)
+const [tools, setTools] =
+  useState(internship.tools || "");
+
+const [qualification, setQualification] =
+  useState(internship.qualification || "");
+
+const [deadline, setDeadline] =
+  useState(internship.deadline || "");
+
+const [openings, setOpenings] =
+  useState(internship.openings || "");
+
+const [joiningDate, setJoiningDate] =
+  useState(internship.joiningDate || "");
+
+  const handleUpdate = async () => {
+
+  try {
+
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      `http://localhost:5000/api/internships/${internship._id}`,
+      {
+        method: "PUT",
+
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: JSON.stringify({
+  title: roleTitle,
+  domain,
+  location,
+  stipend,
+  duration,
+
+  education,
+  experience,
+  tools,
+  qualification,
+
+  deadline,
+  openings: Number(openings),
+  joiningDate,
+
+  description: internship.description,
+  mode: internship.mode,
+  skills: internship.skills || [],
+}),
+      }
     );
 
-    alert("Internship Updated Successfully!");
+    const data = await response.json();
 
-    navigate("/my-posted-internships");
-  };
+    if (response.ok) {
+
+      alert(data.message);
+
+      localStorage.removeItem("editInternship");
+
+      navigate("/my-posted-internships");
+
+    } else {
+
+      alert(data.message);
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Server Error");
+
+  }
+
+};
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -101,6 +162,59 @@ function EditInternship() {
               placeholder="Stipend"
               className="w-full p-4 border rounded-lg"
             />
+
+            <input
+  type="text"
+  value={education}
+  onChange={(e) => setEducation(e.target.value)}
+  placeholder="Education"
+  className="w-full p-4 border rounded-lg"
+/>
+
+<input
+  type="text"
+  value={experience}
+  onChange={(e) => setExperience(e.target.value)}
+  placeholder="Experience"
+  className="w-full p-4 border rounded-lg"
+/>
+
+<input
+  type="text"
+  value={tools}
+  onChange={(e) => setTools(e.target.value)}
+  placeholder="Tools"
+  className="w-full p-4 border rounded-lg"
+/>
+
+<textarea
+  value={qualification}
+  onChange={(e) => setQualification(e.target.value)}
+  placeholder="Qualification"
+  className="w-full p-4 border rounded-lg"
+/>
+
+<input
+  type="date"
+  value={deadline}
+  onChange={(e) => setDeadline(e.target.value)}
+  className="w-full p-4 border rounded-lg"
+/>
+
+<input
+  type="number"
+  value={openings}
+  onChange={(e) => setOpenings(e.target.value)}
+  placeholder="Openings"
+  className="w-full p-4 border rounded-lg"
+/>
+
+<input
+  type="date"
+  value={joiningDate}
+  onChange={(e) => setJoiningDate(e.target.value)}
+  className="w-full p-4 border rounded-lg"
+/>
 
             <input
               type="text"

@@ -1,7 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-function DashboardSidebar() {
+function DashboardSidebar({ profile }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <aside className="w-72 bg-white min-h-screen shadow-sm p-6 flex flex-col">
@@ -17,16 +18,19 @@ function DashboardSidebar() {
         <div className="w-20 h-20 bg-gray-300 rounded-full mx-auto mb-4"></div>
 
         <h3 className="font-bold text-xl">
-          Alex Rivers
-        </h3>
+  {profile?.companyName || "Organization"}
+</h3>
 
         <p className="text-sm text-gray-500 mb-4">
-          Product Design Intern
-        </p>
+  {profile?.industry || "Employer"}
+</p>
 
-        <button className="w-full bg-white text-blue-600 font-semibold py-2 rounded-lg shadow-sm">
-          View Profile
-        </button>
+        <button
+  onClick={() => navigate("/organization-profile-setup")}
+  className="w-full bg-white text-blue-600 font-semibold py-2 rounded-lg shadow-sm"
+>
+  View Profile
+</button>
 
       </div>
 

@@ -7,24 +7,83 @@ function MyPostedInternships() {
   const [internships, setInternships] = useState([]);
 
   useEffect(() => {
-    const storedInternships =
-      JSON.parse(localStorage.getItem("internships")) || [];
 
-    setInternships(storedInternships);
-  }, []);
+  const fetchInternships = async () => {
 
-  const handleDelete = (index) => {
-    const updatedInternships = internships.filter(
-      (_, i) => i !== index
-    );
+    try {
 
-    setInternships(updatedInternships);
+      const token = localStorage.getItem("token");
 
-    localStorage.setItem(
-      "internships",
-      JSON.stringify(updatedInternships)
-    );
+      const response = await fetch(
+        "http://localhost:5000/api/internships/my",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setInternships(data.internships);
+      } else {
+        alert(data.message);
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert("Server Error");
+    }
+
   };
+
+  fetchInternships();
+
+}, []);
+
+  const handleDelete = async (id) => {
+
+  try {
+
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      `http://localhost:5000/api/internships/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+
+      alert(data.message);
+
+      setInternships(
+        internships.filter(
+          (internship) => internship._id !== id
+        )
+      );
+
+    } else {
+
+      alert(data.message);
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+    alert("Server Error");
+
+  }
+
+};
 
   const handleView = (internship) => {
     localStorage.setItem(
@@ -98,17 +157,17 @@ function MyPostedInternships() {
 
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-            {internships.map((internship, index) => (
+            {internships.map((internship) => (
 
-              <div
-                key={index}
+  <div
+    key={internship._id}
                 className="bg-white p-6 rounded-2xl shadow-sm"
               >
 
                 <div className="flex justify-between items-center mb-4">
 
                   <h2 className="text-2xl font-bold">
-                    {internship.roleTitle}
+                    {internship.title}
                   </h2>
 
                   <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
@@ -148,10 +207,7 @@ function MyPostedInternships() {
   onClick={() => {
     localStorage.setItem(
       "editInternship",
-      JSON.stringify({
-        ...internship,
-        index,
-      })
+      JSON.stringify(internship)
     );
 
     navigate("/edit-internship");
@@ -163,7 +219,7 @@ function MyPostedInternships() {
 
                   <button
                     onClick={() =>
-                      handleDelete(index)
+                      handleDelete(internship._id)
                     }
                     className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
                   >

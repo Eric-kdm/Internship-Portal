@@ -16,6 +16,10 @@ import InternshipDetails from "./pages/InternshipDetails";
 import EditInternship from "./pages/EditInternship";
 import OrganizationSettings from "./pages/OrganizationSettings";
 
+
+// In your router or page switch:
+<Route path="/settings" element={<OrganizationSettings />} />
+
 function App() {
   return (
     <BrowserRouter>
@@ -105,6 +109,8 @@ function App() {
         />
 
       </Routes>
+
+      
 
     </BrowserRouter>
   );

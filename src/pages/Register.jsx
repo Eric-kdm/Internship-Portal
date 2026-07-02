@@ -69,28 +69,62 @@ function Register() {
     navigate("/login");
   };
 
-  const handleOrgSubmit = (e) => {
-    e.preventDefault();
+  const handleOrgSubmit = async (e) => {
+  e.preventDefault();
 
-    if (
-      !orgData.companyName ||
-      !orgData.workEmail ||
-      !orgData.website ||
-      !orgData.password ||
-      !orgData.confirmPassword
-    ) {
-      alert("Please fill all fields");
-      return;
+  if (
+    !orgData.companyName ||
+    !orgData.workEmail ||
+    !orgData.website ||
+    !orgData.password ||
+    !orgData.confirmPassword
+  ) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  if (orgData.password !== orgData.confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "http://localhost:5000/api/auth/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          role: "employer",
+          email: orgData.workEmail,
+          password: orgData.password,
+          companyName: orgData.companyName,
+          website: orgData.website,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Organization Account Created");
+
+      localStorage.setItem(
+        "token",
+        data.data.token
+      );
+
+      navigate("/login");
+    } else {
+      alert(data.message);
     }
-
-    if (orgData.password !== orgData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-
-    alert("Organization Account Created");
-    navigate("/login");
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Server Error");
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#f7f9fb] flex flex-col">

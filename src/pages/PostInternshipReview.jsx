@@ -15,25 +15,77 @@ function PostInternshipReview() {
   const step3 =
     JSON.parse(localStorage.getItem("step3Data")) || {};
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
+
   const internship = {
-    ...step1,
-    ...step2,
-    ...step3,
-    status: "Published",
-  };
+  title: step1.roleTitle,
+  domain: step1.domain,
+  description: step1.description,
 
-  const existingInternships =
-    JSON.parse(localStorage.getItem("internships")) || [];
+  location: step3.location,
+  stipend: step3.stipend,
+  duration: step3.duration,
 
-  existingInternships.push(internship);
+  education: step2.education,
+  experience: step2.experience,
+  tools: step2.tools,
+  qualification: step2.qualification,
 
-  localStorage.setItem(
-    "internships",
-    JSON.stringify(existingInternships)
-  );
+  deadline: step3.deadline,
+  openings: Number(step3.openings),
+  joiningDate: step3.joiningDate,
 
-  navigate("/post-internship/success");
+  mode: step3.workMode,
+
+  skills: step2.skills
+    .split(",")
+    .map((skill) => skill.trim()),
+};
+
+  try {
+
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      "http://localhost:5000/api/internships",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: JSON.stringify(internship),
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+
+      alert(data.message);
+
+      localStorage.removeItem("step1Data");
+      localStorage.removeItem("step2Data");
+      localStorage.removeItem("step3Data");
+
+      navigate("/post-internship/success");
+
+    } else {
+
+      alert(data.message);
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Server Error");
+
+  }
+
 };
 
   return (

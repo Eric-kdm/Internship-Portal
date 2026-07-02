@@ -1,4 +1,4 @@
-function ProfessionalDetails() {
+function ProfessionalDetails({ formData, setFormData }) {
   return (
     <section className="bg-white rounded-2xl p-8 shadow-sm">
       <h2 className="text-2xl font-bold mb-8">
@@ -15,6 +15,13 @@ function ProfessionalDetails() {
           <input
             type="text"
             placeholder="e.g. Digital Media"
+            value={formData.industry}
+            onChange={(e) =>
+            setFormData({
+            ...formData,
+            industry: e.target.value,
+            })
+          }
             className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -24,7 +31,16 @@ function ProfessionalDetails() {
             Workforce Size
           </label>
 
-          <select className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select
+  value={formData.workforceSize}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      workforceSize: e.target.value,
+    })
+  }
+  className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
             <option>1-10 employees</option>
             <option>11-50 employees</option>
             <option>51-200 employees</option>
@@ -39,10 +55,17 @@ function ProfessionalDetails() {
           </label>
 
           <input
-            type="text"
-            placeholder="📍 City, Country"
-            className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+  type="text"
+  placeholder="📍 City, Country"
+  value={formData.headquarters}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      headquarters: e.target.value,
+    })
+  }
+  className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
         </div>
 
       </div>

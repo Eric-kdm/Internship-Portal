@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+
+import { useEffect, useState } from "react";
 
 import DashboardSidebar from "../Components/DashboardSidebar";
 import DashboardHeader from "../Components/DashboardHeader";
@@ -10,37 +10,55 @@ import FeaturedBanner from "../Components/FeaturedBanner";
 import DashboardFooter from "../Components/DashboardFooter";
 
 function OrganizationDashboard() {
-  const navigate = useNavigate();
+ 
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  window.scrollTo(0, 0);
+
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        "http://localhost:5000/api/users/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setProfile(data.user);
+      } else {
+        alert(data.message);
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchProfile();
+}, []);
 
   return (
     <div className="flex bg-gray-50 min-h-screen">
 
       {/* Sidebar */}
-      <DashboardSidebar />
+      <DashboardSidebar profile={profile} />
 
       {/* Main Content */}
       <main className="flex-1 p-8">
 
         {/* Header */}
-        <DashboardHeader />
+        <DashboardHeader profile={profile} />
 
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-4 mt-6">
-
-          <button
-            onClick={() =>
-              navigate("/my-posted-internships")
-            }
-            className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition"
-          >
-            My Posted Internships
-          </button>
-
-        </div>
+        
 
         {/* Stats Section */}
         <div className="mt-8">

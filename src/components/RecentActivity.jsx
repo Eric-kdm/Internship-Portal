@@ -1,4 +1,73 @@
+import { useEffect, useState } from "react";
+
 function RecentActivity() {
+
+  const [activities, setActivities] = useState([]);
+
+  const formatTime = (date) => {
+
+  const seconds =
+    Math.floor((new Date() - new Date(date)) / 1000);
+
+  const minutes = Math.floor(seconds / 60);
+
+  const hours = Math.floor(minutes / 60);
+
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60)
+    return "Just now";
+
+  if (minutes < 60)
+    return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+
+  if (hours < 24)
+    return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+
+  if (days === 1)
+    return "Yesterday";
+
+  if (days < 7)
+    return `${days} days ago`;
+
+  return new Date(date).toLocaleDateString();
+};
+
+  useEffect(() => {
+
+  const fetchActivities = async () => {
+
+    try {
+
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        "http://localhost:5000/api/dashboard",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setActivities(data.activities || []);
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+
+  fetchActivities();
+
+}, []);
+
   return (
     <section className="bg-white p-6 rounded-2xl shadow-sm h-full">
 
@@ -8,73 +77,55 @@ function RecentActivity() {
 
       <div className="space-y-8">
 
-        {/* Activity 1 */}
-        <div className="flex gap-4">
+        {activities.length === 0 ? (
 
-          <div className="w-3 h-3 bg-blue-600 rounded-full mt-2"></div>
+  <p className="text-gray-500">
+    No recent activity.
+  </p>
 
-          <div>
-            <h4 className="font-semibold">
-              New application received
-            </h4>
+) : (
 
-            <p className="text-sm text-gray-500">
-              Sarah Chen applied for Product Design
-            </p>
+  activities.map((activity, index) => (
 
-            <p className="text-xs text-gray-400 mt-2 uppercase">
-              2 Minutes Ago
-            </p>
-          </div>
+    <div
+      key={index}
+      className="flex gap-4"
+    >
 
-        </div>
+      <div
+        className={`w-3 h-3 rounded-full mt-2 ${
+          activity.type === "application"
+            ? "bg-blue-600"
+            : "bg-green-500"
+        }`}
+      ></div>
 
-        {/* Activity 2 */}
-        <div className="flex gap-4">
+      <div>
 
-          <div className="w-3 h-3 bg-orange-600 rounded-full mt-2"></div>
+        <h4 className="font-semibold">
+          {activity.title}
+        </h4>
 
-          <div>
-            <h4 className="font-semibold">
-              Interview Scheduled
-            </h4>
+        <p className="text-sm text-gray-500">
+          {activity.message}
+        </p>
 
-            <p className="text-sm text-gray-500">
-              Meeting with Marcus V. at 2:00 PM
-            </p>
-
-            <p className="text-xs text-gray-400 mt-2 uppercase">
-              45 Minutes Ago
-            </p>
-          </div>
-
-        </div>
-
-        {/* Activity 3 */}
-        <div className="flex gap-4">
-
-          <div className="w-3 h-3 bg-green-500 rounded-full mt-2"></div>
-
-          <div>
-            <h4 className="font-semibold">
-              Offer Accepted
-            </h4>
-
-            <p className="text-sm text-gray-500">
-              Leo Da Silva joined the Frontend team
-            </p>
-
-            <p className="text-xs text-gray-400 mt-2 uppercase">
-              3 Hours Ago
-            </p>
-          </div>
-
-        </div>
+        <p className="text-xs text-gray-400 mt-2 uppercase">
+  {formatTime(activity.createdAt)}
+</p>
 
       </div>
 
-      {/* Pipeline Distribution */}
-      <div className="bg-gray-100 rounded-xl p-4 mt-10">
+    </div>
+
+  ))
+
+)}
+
+</div>
+
+{/* Pipeline Distribution */}
+<div className="bg-gray-100 rounded-xl p-4 mt-10">
 
         <h3 className="font-bold mb-4">
           Pipeline Distribution
